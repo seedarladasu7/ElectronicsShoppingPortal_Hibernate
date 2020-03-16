@@ -2,20 +2,17 @@ package com.portal.shopping.electronics.dao;
 
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
-import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.portal.shopping.electronics.entity.Product;
 import com.portal.shopping.electronics.entity.Purchase;
-import com.portal.shopping.electronics.entity.User;
 
 @Repository
 @Transactional
@@ -36,8 +33,13 @@ public class PurchaseDAO {
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	public List<Purchase> findByUserId(Integer userid) {
-		return sessionFactory.getCurrentSession().createCriteria(Purchase.class)
-				.add(Restrictions.eq("userId", userid)).list();
+		CriteriaBuilder criteriaBuilder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Purchase> searchCriteria = criteriaBuilder.createQuery(Purchase.class);
+		Root<Purchase> rootPurchase = searchCriteria.from(Purchase.class);
+		javax.persistence.criteria.Predicate pres = criteriaBuilder.equal(rootPurchase.get("userId"), userid);
+		searchCriteria.select(rootPurchase).where(criteriaBuilder.and(pres));
+
+		return sessionFactory.getCurrentSession().createQuery(searchCriteria).getResultList();
 
 	}
 
