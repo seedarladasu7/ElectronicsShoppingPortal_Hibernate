@@ -23,7 +23,7 @@ public class CartDAO {
 
 	@SuppressWarnings({ "deprecation" })
 	public Cart findById(Integer cartId) {
-		return (Cart) sessionFactory.getCurrentSession().createCriteria(Product.class)
+		return (Cart) sessionFactory.getCurrentSession().createCriteria(Cart.class)
 				.add(Restrictions.eq("cartId", cartId)).uniqueResult();
 	}
 

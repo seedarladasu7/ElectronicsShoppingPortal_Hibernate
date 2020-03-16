@@ -19,7 +19,7 @@ public class UserDAO {
 
 	@SuppressWarnings({ "deprecation" })
 	public User findById(Integer userId) {
-		return (User) sessionFactory.getCurrentSession().createCriteria(Product.class)
+		return (User) sessionFactory.getCurrentSession().createCriteria(User.class)
 				.add(Restrictions.eq("userId", userId)).uniqueResult();
 	}
 

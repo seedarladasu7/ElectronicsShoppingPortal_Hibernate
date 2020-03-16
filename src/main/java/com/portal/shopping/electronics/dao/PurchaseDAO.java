@@ -30,17 +30,14 @@ public class PurchaseDAO {
 
 	@SuppressWarnings({ "deprecation" })
 	public Purchase findById(Integer purchaseId) {
-		return (Purchase) sessionFactory.getCurrentSession().createCriteria(Product.class)
+		return (Purchase) sessionFactory.getCurrentSession().createCriteria(Purchase.class)
 				.add(Restrictions.eq("purchaseId", purchaseId)).uniqueResult();
 	}
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	public List<Purchase> findByUserId(Integer userid) {
-		DetachedCriteria sub = DetachedCriteria.forClass(User.class).add(Restrictions.eq("user.userId", userid));
-		sub.setProjection(Projections.property("id"));
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Purchase.class);
-		criteria.add(Property.forName("id").notIn(sub));
-		return criteria.list();
+		return sessionFactory.getCurrentSession().createCriteria(Purchase.class)
+				.add(Restrictions.eq("userId", userid)).list();
 
 	}
 

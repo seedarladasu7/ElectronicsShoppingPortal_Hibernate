@@ -19,7 +19,7 @@ public class PaymentModeDAO {
 
 	@SuppressWarnings({ "deprecation" })
 	public PaymentMode findById(Integer paymentModeId) {
-		return (PaymentMode) sessionFactory.getCurrentSession().createCriteria(Product.class)
+		return (PaymentMode) sessionFactory.getCurrentSession().createCriteria(PaymentMode.class)
 				.add(Restrictions.eq("paymentModeId", paymentModeId)).uniqueResult();
 	}
 

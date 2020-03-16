@@ -19,7 +19,7 @@ public class DeliveryModeDAO {
 
 	@SuppressWarnings({ "deprecation" })
 	public DeliveryMode findById(Integer deliveryModeId) {
-		return (DeliveryMode) sessionFactory.getCurrentSession().createCriteria(Product.class)
+		return (DeliveryMode) sessionFactory.getCurrentSession().createCriteria(DeliveryMode.class)
 				.add(Restrictions.eq("deliveryModeId", deliveryModeId)).uniqueResult();
 	}
 
