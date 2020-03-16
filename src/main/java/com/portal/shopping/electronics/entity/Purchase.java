@@ -29,22 +29,22 @@ public class Purchase {
 	private Integer purchaseId;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "cart_id")
+	@JoinColumn(name = "cartId")
 	@JsonBackReference
 	private Cart cart;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "payment_mode_id")
+	@JoinColumn(name = "paymentModeId")
 	@JsonBackReference
 	private PaymentMode paymentMode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "delivery_mode_id")
+	@JoinColumn(name = "deliveryModeId")
 	@JsonBackReference
 	private DeliveryMode deliveryMode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "userId")
 	@JsonBackReference
 	private User user;
 

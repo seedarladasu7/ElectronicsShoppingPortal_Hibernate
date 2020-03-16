@@ -9,9 +9,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.portal.shopping.electronics.dao.CartDAO;
+import com.portal.shopping.electronics.dao.DeliveryModeDAO;
+import com.portal.shopping.electronics.dao.PaymentModeDAO;
+import com.portal.shopping.electronics.dao.ProductDAO;
+import com.portal.shopping.electronics.dao.PurchaseDAO;
+import com.portal.shopping.electronics.dao.UserDAO;
 import com.portal.shopping.electronics.dto.CartProductDTO;
 import com.portal.shopping.electronics.dto.ProductDTO;
 import com.portal.shopping.electronics.dto.PurchaseDataDTO;
@@ -30,34 +35,28 @@ import com.portal.shopping.electronics.model.ProductToCartRequest;
 import com.portal.shopping.electronics.model.ProductsResponse;
 import com.portal.shopping.electronics.model.PurchaseDetails;
 import com.portal.shopping.electronics.model.PurchaseRequest;
-import com.portal.shopping.electronics.repository.CartRepository;
-import com.portal.shopping.electronics.repository.DeliveryModeRepository;
-import com.portal.shopping.electronics.repository.PaymentModeRepository;
-import com.portal.shopping.electronics.repository.ProductRepository;
-import com.portal.shopping.electronics.repository.PurchaseRepository;
-import com.portal.shopping.electronics.repository.UserRepository;
 import com.portal.shopping.electronics.service.ElectronicsShoppingService;
 
 @Service
 public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingService {
 
 	@Autowired
-	ProductRepository productRepository;
-
+	ProductDAO productDAO;
+	
 	@Autowired
-	UserRepository userRepository;
-
+	CartDAO cartDAO;
+	
 	@Autowired
-	CartRepository cartRepository;
-
+	UserDAO userDAO;
+	
 	@Autowired
-	PaymentModeRepository payModeRepository;
-
+	PaymentModeDAO paymentModeDAO;
+	
 	@Autowired
-	DeliveryModeRepository deliveryModeRepository;
-
+	DeliveryModeDAO deliveryModeDAO;
+	
 	@Autowired
-	PurchaseRepository purchaseRepository;
+	PurchaseDAO purchaseDAO;
 
 	private static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -66,9 +65,9 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 		List<Product> productsList = null;
 
 		if (productName.isPresent()) {
-			productsList = productRepository.findByProductNameContainingIgnoreCaseOrderByProductName(productName.get());
+			productsList = productDAO.findByProductNameContainingIgnoreCaseOrderByProductName(productName.get());
 		} else {
-			productsList = productRepository.findAll(Sort.by("productName"));
+			productsList = productDAO.findAll();
 		}
 
 		List<ProductDTO> products = productsList.stream()
@@ -88,7 +87,7 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 			List<Integer> iProdIds = request.getProductsList().stream().map(ProductAndQuantity::getProductId)
 					.collect(Collectors.toList());
 
-			List<Product> productsList = productRepository.findByProductIdIn(iProdIds);
+			List<Product> productsList = productDAO.findByProductIdIn(iProdIds);
 
 			Map<Integer, Double> prodPricesMap = productsList.stream()
 					.collect(Collectors.toMap(Product::getProductId, Product::getPrice));
@@ -106,7 +105,7 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 
 			cart.setCartProducts(cartProdList);
 
-			cartRepository.saveAndFlush(cart);
+			cartDAO.saveAndFlush(cart);
 			
 			return "Product(s) added to cart successfully...";
 		} catch (Exception e) {
@@ -118,19 +117,19 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 	public String confirmPurchase(PurchaseRequest request) {
 		try {
 
-			Optional<User> userOpt = userRepository.findById(request.getUserId());
+			User userOpt = userDAO.findById(request.getUserId());
 
-			if (!userOpt.isPresent()) {
+			if (userOpt == null) {
 				throw new InvalidUserException("Invalid User");
 			}
 
-			Optional<Cart> cartOpt = cartRepository.findById(request.getCartId());
+			Cart cartOpt = cartDAO.findById(request.getCartId());
 
-			Optional<PaymentMode> payModeOpt = payModeRepository.findById(request.getPaymentModeId());
+			PaymentMode payModeOpt = paymentModeDAO.findById(request.getPaymentModeId());
 
-			Optional<DeliveryMode> deliveryModeOpt = deliveryModeRepository.findById(request.getDeliveryModeId());
+			DeliveryMode deliveryModeOpt = deliveryModeDAO.findById(request.getDeliveryModeId());
 
-			if (!cartOpt.isPresent() || !payModeOpt.isPresent() || !deliveryModeOpt.isPresent()) {
+			if (cartOpt == null || payModeOpt == null || deliveryModeOpt == null) {
 				throw new InvalidInputException("Invalid Cart Information");
 			}
 
@@ -138,11 +137,11 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 
 			purchase.setPurchaseOn(dateTimeFormatter.format(new java.util.Date()));
 
-			purchase.setCart(cartOpt.get());
-			purchase.setPaymentMode(payModeOpt.get());
-			purchase.setDeliveryMode(deliveryModeOpt.get());
-			purchase.setUser(userOpt.get());
-			purchaseRepository.saveAndFlush(purchase);
+			purchase.setCart(cartOpt);
+			purchase.setPaymentMode(payModeOpt);
+			purchase.setDeliveryMode(deliveryModeOpt);
+			purchase.setUser(userOpt);
+			purchaseDAO.saveAndFlush(purchase);
 			return "Order placed successfully...";
 
 		} catch (Exception e) {
@@ -154,10 +153,10 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 	public PurchaseDetails getUserOrders(Integer userId) {
 
 		List<Purchase> purchases = new ArrayList<>();
-		Optional<User> user = userRepository.findById(userId);
+		User user = userDAO.findById(userId);
 
-		if (user.isPresent()) {
-			purchases = purchaseRepository.findByUser(user.get());
+		if (user != null) {
+			purchases = purchaseDAO.findByUserId(user.getUserId());
 		}
 
 		PurchaseDetails purchaseDetails = new PurchaseDetails();
@@ -170,7 +169,7 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 			Cart cart = purchase.getCart();
 			List<CartProductDTO> cartProdList = cart.getCartProducts().stream()
 					.map(cartProd -> new CartProductDTO(
-							productRepository.findById(cartProd.getProductId()).get().getProductName(),
+							productDAO.findById(cartProd.getProductId()).getProductName(),
 							cartProd.getQuantity(), cartProd.getPrice()))
 					.collect(Collectors.toList());
 			

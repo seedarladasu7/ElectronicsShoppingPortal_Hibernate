@@ -32,7 +32,7 @@ public class Cart {
 	private String updatedOn;
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "cart_id")
+	@JoinColumn(name = "cartId")
 	private List<CartProduct> cartProducts;
 
 }

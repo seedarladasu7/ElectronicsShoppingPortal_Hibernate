@@ -32,7 +32,7 @@ public class CartProduct {
 	private Double price;
 	
 	@ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "cart_id", insertable = false, updatable = false)
+	@JoinColumn(name = "cartId", insertable = false, updatable = false)
 	private Cart cart;
 
 }
