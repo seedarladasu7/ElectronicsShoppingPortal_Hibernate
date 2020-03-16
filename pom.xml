@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.portal.shopping.electronics</groupId>
-	<artifactId>ElectronicsShoppingPortal</artifactId>
+	<artifactId>ElectronicsShoppingPortal_Hibernate</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ElectronicsShoppingPortal</name>
+	<name>ElectronicsShoppingPortal_Hibernate</name>
 	<description>Online Electronics Shopping Portal</description>
 
 	<properties>

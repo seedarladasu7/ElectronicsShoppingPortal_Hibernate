@@ -6,6 +6,7 @@ com\portal\shopping\electronics\repository\PurchaseRepository.class
 com\portal\shopping\electronics\dto\ProductDTO.class
 com\portal\shopping\electronics\entity\Purchase.class
 com\portal\shopping\electronics\repository\CartRepository.class
+com\portal\shopping\electronics\ElectronicsShoppingPortalHibernateApplication.class
 com\portal\shopping\electronics\entity\DeliveryMode.class
 com\portal\shopping\electronics\model\ProductToCartRequest.class
 com\portal\shopping\electronics\model\ProductsResponse.class
@@ -26,6 +27,5 @@ com\portal\shopping\electronics\service\ElectronicsShoppingService.class
 com\portal\shopping\electronics\controller\ElectronicsShoppingPortalController.class
 com\portal\shopping\electronics\exceptionhandling\CustomExceptionHandler.class
 com\portal\shopping\electronics\model\ProductAndQuantity.class
-com\portal\shopping\electronics\ElectronicsShoppingPortalApplication.class
 com\portal\shopping\electronics\entity\User.class
 com\portal\shopping\electronics\exceptionclasses\RecordNotFoundException.class
