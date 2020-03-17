@@ -21,8 +21,8 @@ public class ProductDAO {
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public List<Product> findByProductNameContainingIgnoreCaseOrderByProductName(String productName) {
-		return sessionFactory.getCurrentSession().createQuery("from Product where productName LIKE '%:productName%'")
-				.setString("firstName", productName).list();
+		return sessionFactory.getCurrentSession().createQuery("from Product where productName LIKE :prodName order by productName desc")
+				.setString("prodName", '%'+productName+'%').list();
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
