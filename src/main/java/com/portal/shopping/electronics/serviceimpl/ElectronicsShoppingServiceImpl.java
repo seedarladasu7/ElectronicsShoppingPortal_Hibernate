@@ -156,7 +156,7 @@ public class ElectronicsShoppingServiceImpl implements ElectronicsShoppingServic
 		User user = userDAO.findById(userId);
 
 		if (user != null) {
-			purchases = purchaseDAO.findByUserId(user.getUserId());
+			purchases = purchaseDAO.findByUser(user);
 		}
 
 		PurchaseDetails purchaseDetails = new PurchaseDetails();
