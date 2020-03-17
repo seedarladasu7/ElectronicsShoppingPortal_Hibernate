@@ -36,7 +36,6 @@ public class PurchaseDAO {
 				.add(Restrictions.eq("purchaseId", purchaseId)).uniqueResult();
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
 	public List<Purchase> findByUser(User user) {
 		
 		Session session = sessionFactory.openSession();
