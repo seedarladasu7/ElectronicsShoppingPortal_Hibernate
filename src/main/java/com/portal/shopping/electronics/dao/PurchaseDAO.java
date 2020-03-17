@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.portal.shopping.electronics.entity.Purchase;
 import com.portal.shopping.electronics.entity.User;
+import com.portal.shopping.electronics.exceptionclasses.RecordNotFoundException;
 
 @Repository
 @Transactional
@@ -37,21 +38,28 @@ public class PurchaseDAO {
 	}
 
 	public List<Purchase> findByUser(User user) {
-		
-		Session session = sessionFactory.openSession();
-		
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
-     
-    	Root<Purchase> from = criteriaQuery.from(Purchase.class);
-    	Join<Purchase, User> join = from.join("user", JoinType.LEFT);
-    	criteriaQuery.where(criteriaBuilder.equal(join.get("userId"), user.getUserId()));
-    	TypedQuery<Purchase> tq = session.createQuery(criteriaQuery);
-    	
-    	List<Purchase> users = tq.getResultList();
-    	
-        return users;
-  
+		Session session = null;
+
+		try {
+			session = sessionFactory.openSession();
+
+			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+			CriteriaQuery<Purchase> criteriaQuery = criteriaBuilder.createQuery(Purchase.class);
+
+			Root<Purchase> from = criteriaQuery.from(Purchase.class);
+			Join<Purchase, User> join = from.join("user", JoinType.LEFT);
+			criteriaQuery.where(criteriaBuilder.equal(join.get("userId"), user.getUserId()));
+			TypedQuery<Purchase> tq = session.createQuery(criteriaQuery);
+
+			List<Purchase> users = tq.getResultList();
+
+			return users;
+		} catch (Exception exDesc) {
+			throw new RecordNotFoundException(exDesc.getMessage());
+		} finally {
+			//session.close();
+		}
+
 	}
 
 }
